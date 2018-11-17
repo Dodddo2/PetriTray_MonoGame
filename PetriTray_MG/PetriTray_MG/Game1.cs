@@ -11,6 +11,9 @@ namespace PetriTray_MG
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        BasicEffect effect;
+
+        BasicGeometry ball;
 
         public Game1()
         {
@@ -28,6 +31,12 @@ namespace PetriTray_MG
         {
             // TODO: Add your initialization logic here
 
+            IsMouseVisible = true;
+
+            graphics.PreferredBackBufferHeight = Camera.Main.Resolution.Height;
+            graphics.PreferredBackBufferWidth = Camera.Main.Resolution.Width;
+            graphics.ApplyChanges();
+
             base.Initialize();
         }
 
@@ -39,6 +48,8 @@ namespace PetriTray_MG
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            ball = BasicGeometry.CreateSphere(GraphicsDevice);
+            ball.Effect.EnableDefaultLighting();
 
             // TODO: use this.Content to load your game content here
         }
@@ -57,13 +68,18 @@ namespace PetriTray_MG
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        float rot = 0.0f;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().GetPressedKeys().Length > 0)
+            {
+                InputHandling.InputHandler.KeyboardInputs(Keyboard.GetState().GetPressedKeys());
+            }
             // TODO: Add your update logic here
-
+            
             base.Update(gameTime);
         }
 
@@ -76,6 +92,7 @@ namespace PetriTray_MG
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            ball.Draw(Matrix.Identity, Camera.Main.View, Camera.Main.Projection);
 
             base.Draw(gameTime);
         }

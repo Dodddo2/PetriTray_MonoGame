@@ -41,8 +41,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BasicGeometry.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="InputHandling\InputHandler.cs" />
     <Compile Include="Models\Metaball.cs" />
+    <Compile Include="Models\Sphere.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
