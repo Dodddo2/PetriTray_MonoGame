@@ -42,7 +42,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BasicGeometry.cs" />
+    <Compile Include="Blob.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="EntitySprite.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="InputHandling\InputHandler.cs" />
     <Compile Include="Models\Metaball.cs" />
@@ -58,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Metaball.fx" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
