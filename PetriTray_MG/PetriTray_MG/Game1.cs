@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace PetriTray_MG
 {
@@ -12,6 +13,7 @@ namespace PetriTray_MG
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         BasicEffect effect;
+        Blob player;
 
         BasicGeometry ball;
 
@@ -50,6 +52,12 @@ namespace PetriTray_MG
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ball = BasicGeometry.CreateSphere(GraphicsDevice);
             ball.Effect.EnableDefaultLighting();
+            player = new Blob(Vector3.Zero, GraphicsDevice, Content.Load<Effect>("Metaball"));
+            player.AddBall(new Models.Metaball());
+            player.metaballs[0].Parameters.X = 0.1f;
+            //Console.WriteLine(GraphicsDevice.Viewport.Project(new Vector3(-200, 0, 0), Camera.Main.Projection, Camera.Main.View, Matrix.Identity));
+
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -68,7 +76,6 @@ namespace PetriTray_MG
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        float rot = 0.0f;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -92,7 +99,8 @@ namespace PetriTray_MG
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            ball.Draw(Matrix.Identity, Camera.Main.View, Camera.Main.Projection);
+            //ball.Draw(Matrix.Identity, Camera.Main.View, Camera.Main.Projection);
+            player.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

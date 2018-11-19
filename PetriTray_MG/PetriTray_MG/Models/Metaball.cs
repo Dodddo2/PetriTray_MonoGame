@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +10,35 @@ namespace PetriTray_MG.Models
 {
     class Metaball
     {
-        public float Treshold;
+        public Vector3 Position;
+        public Vector3 SpritePos;
+        private Vector4 rGBA;
+        public Vector4 Parameters;
 
-        /// <param r="Distance">
-        public float Falloff(float r)
-        {
-            if (r < Treshold && r > 0)
+        public Vector4 RGBA { get => rGBA;
+            set
             {
-                return (float)Math.Cos(r);
+                if ((value.X < 0 || value.X > 1) &&
+                    (value.Y < 0 || value.Y > 1) &&
+                    (value.Z < 0 || value.Z > 1) &&
+                    (value.W < 0 || value.W > 1))
+                {return;}
+                rGBA = value;
             }
-            return 0;
+        }
+
+        public Metaball()
+        {
+            Position = Vector3.Zero;
+            rGBA = Vector4.UnitW;
+            Parameters = Vector4.UnitX;
+        }
+
+        public Metaball(Vector3 pos, Vector4 rgba, Vector4 param)
+        {
+            Position = pos;
+            rGBA = rgba;
+            Parameters = param;
         }
     }
 }
