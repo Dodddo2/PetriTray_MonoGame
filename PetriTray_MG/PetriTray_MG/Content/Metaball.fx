@@ -1,21 +1,18 @@
-﻿#define MAXBALLS 20
+﻿float3 positions[20];
+float4 colors[20];
+float heats[20];
 
-float3 positions[MAXBALLS];
-float4 colors[MAXBALLS];
-float4 parameters[MAXBALLS];
-
-float4 MetaballFalloff(float2 coords : TEXCOORD0, float counter) : COLOR1
+float4 MetaballFalloff(float2 coord: TEXCOORD1, float counter) : COLOR1
 {
-	float distance = sqrt(pow(coords.x - positions[counter].x, 2) + pow(coords.y - positions[counter].y, 2));
-	if (distance < parameters[counter].x) {
-		return colors[counter];
-	}
-	return float4(0,0,0,0);
+	float dist = distance(coord, positions[counter]);
+	float falloff = exp(-((dist*dist) / (2 * heats[counter] * heats[counter])));
+	return (colors[counter] * falloff);
 }
 
 float4 PS(float2 coords: TEXCOORD0) : COLOR0
 {
-	return MetaballFalloff(coords, 0);
+	float4 ret= MetaballFalloff(coords, 0) + MetaballFalloff(coords, 1);
+	return ret;
 }
 
 technique Ball

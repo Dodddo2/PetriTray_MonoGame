@@ -12,42 +12,80 @@ namespace PetriTray_MG
     {
         public EntitySprite sprite;
         public Vector3 Pivot;
-        public Effect Effect;
+        private Effect effect;
         public List<Models.Metaball> metaballs = new List<Models.Metaball>();
+        private GraphicStructure graphicStructure;
+        private int maxBalls = 20; // maximális metalabdák száma
+
+        
 
         public Blob(Vector3 pos, GraphicsDevice device, Effect effect)
         {
-            int width = 600;
-            int height = 600;
-            sprite = new EntitySprite(device);
+            int width = 256;
+            int height = 256;
+            sprite = new EntitySprite(device, width, height);
             Pivot = pos;
-            Effect = effect;
-            sprite.Sprite = new Texture2D(device, width, height);
-            sprite.WorldPos = new Vector3(Pivot.X-(width/2), Pivot.Y-(height/2), Pivot.Z);
+            this.effect = effect;
+            sprite.WorldPos = pos;
+
+            graphicStructure = new GraphicStructure(maxBalls);
         }
 
         public void AddBall(Models.Metaball ball)
         {
-            ball.SpritePos = ball.Position - Camera.Main.Position;
             metaballs.Add(ball);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice device)
         {
-            for(int i = 0; i < metaballs.Count; i++)
-            {
-                
-                Effect.Parameters["positions"].Elements[i].SetValue(metaballs[i].SpritePos);
-                Effect.Parameters["colors"].Elements[i].SetValue(metaballs[i].RGBA);
-                Effect.Parameters["parameters"].Elements[i].SetValue(metaballs[i].Parameters);
-                
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                Effect.CurrentTechnique.Passes[0].Apply();
-                spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.White);
-                spriteBatch.End();
-            }
+            device.SetRenderTarget(sprite.Sprite);
+            graphicStructure.RefreshStructure(metaballs);
 
+            //Kártya adatainak feltöltése, ha nem használt a paraméter ki kell kommentezni!
+            effect.Parameters["colors"].SetValue(graphicStructure.Colors);
+            effect.Parameters["positions"].SetValue(graphicStructure.Positions);
+            effect.Parameters["heats"].SetValue(graphicStructure.Heats);
+
+            device.Clear(Color.Transparent);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+            effect.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
+            spriteBatch.End();
         }
 
+        private class GraphicStructure
+        {
+            public Vector4[] Colors;
+            public Vector3[] Positions;
+            public float[] Heats;
+        
+            public GraphicStructure(int maxBalls)
+            {
+                Colors = new Vector4[maxBalls];
+                Positions = new Vector3[maxBalls];
+                Heats = new float[maxBalls];
+            }
+
+            public void ClearStructure()
+            {
+                int maxBalls = Colors.Length;
+                Colors = new Vector4[maxBalls];
+                Positions = new Vector3[maxBalls];
+                Heats = new float[maxBalls];
+            }
+
+            public void RefreshStructure(List<Models.Metaball> metaballs)
+            {
+                int counter = 0;
+                ClearStructure();
+                foreach (Models.Metaball balls in metaballs)
+                {
+                    Colors[counter] = balls.RGBA;
+                    Positions[counter] = balls.Position;
+                    Heats[counter] = balls.Heat;
+                    counter++;
+                }
+            }
+        }
     }
 }

@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace PetriTray_MG
 {
@@ -13,7 +16,7 @@ namespace PetriTray_MG
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         BasicEffect effect;
-        Blob player;
+        Blob player, thing;
 
         BasicGeometry ball;
 
@@ -50,11 +53,12 @@ namespace PetriTray_MG
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            ball = BasicGeometry.CreateSphere(GraphicsDevice);
-            ball.Effect.EnableDefaultLighting();
             player = new Blob(Vector3.Zero, GraphicsDevice, Content.Load<Effect>("Metaball"));
-            player.AddBall(new Models.Metaball());
-            player.metaballs[0].Parameters.X = 0.1f;
+            player.AddBall(new Models.Metaball(new Vector3(-0.2f, 0, 0), new Vector4(0,1,0,1), 0.2f));
+            player.AddBall(new Models.Metaball(new Vector3(0.2f, 0, 0), new Vector4(1, 0, 0, 1), 0.2f));
+            thing = new Blob(new Vector3(400, 0, 0), GraphicsDevice, Content.Load<Effect>("Metaball"));
+            thing.AddBall(new Models.Metaball(Vector3.Zero, new Vector4(0, 1, 0, 1), 0.2f));
+
             //Console.WriteLine(GraphicsDevice.Viewport.Project(new Vector3(-200, 0, 0), Camera.Main.Projection, Camera.Main.View, Matrix.Identity));
 
 
@@ -94,13 +98,24 @@ namespace PetriTray_MG
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        Stopwatch watch = new Stopwatch();
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            watch.Stop();
+            Console.WriteLine(watch.ElapsedMilliseconds);
+            watch.Restart();
             // TODO: Add your drawing code here
-            //ball.Draw(Matrix.Identity, Camera.Main.View, Camera.Main.Projection);
-            player.Draw(spriteBatch);
+            player.Draw(spriteBatch, GraphicsDevice);
+            //thing.Draw(spriteBatch, GraphicsDevice);
+
+
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Black);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);           
+                spriteBatch.Draw(player.sprite.Sprite, new Vector2(player.sprite.WorldPos.X, player.sprite.WorldPos.Y), Color.White);
+                spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y), Color.White);
+            spriteBatch.End();
+
 
             base.Draw(gameTime);
         }
