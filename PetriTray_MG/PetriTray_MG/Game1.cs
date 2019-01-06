@@ -18,7 +18,6 @@ namespace PetriTray_MG
         BasicEffect effect;
         Blob player, thing;
 
-        BasicGeometry ball;
 
         public Game1()
         {
@@ -54,8 +53,9 @@ namespace PetriTray_MG
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player = new Blob(Vector3.Zero, GraphicsDevice, Content.Load<Effect>("Metaball"));
-            player.AddBall(new Models.Metaball(new Vector3(-0.2f, 0, 0), new Vector4(0,1,0,1), 0.2f));
-            player.AddBall(new Models.Metaball(new Vector3(0.2f, 0, 0), new Vector4(1, 0, 0, 1), 0.2f));
+            player.AddBall(new Models.Metaball(new Vector3(-0.2f, 0, 0), new Vector4(0,1,0,1), 0.3f));
+            player.AddBall(new Models.Metaball(Vector3.Zero, new Vector4(1, 0, 0, 1), 0.3f));
+            
             thing = new Blob(new Vector3(400, 0, 0), GraphicsDevice, Content.Load<Effect>("Metaball"));
             thing.AddBall(new Models.Metaball(Vector3.Zero, new Vector4(0, 1, 0, 1), 0.2f));
 
@@ -89,8 +89,11 @@ namespace PetriTray_MG
             {
                 InputHandling.InputHandler.KeyboardInputs(Keyboard.GetState().GetPressedKeys());
             }
+
+            player.metaballs[1].Position = Camera.Main.Position;
+            //Camera.Main.Move(new Vector3(0.01f, 0,0));
             // TODO: Add your update logic here
-            
+
             base.Update(gameTime);
         }
 
@@ -110,10 +113,10 @@ namespace PetriTray_MG
 
 
             GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.Black);
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);           
+            GraphicsDevice.Clear(Color.Purple);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);           
                 spriteBatch.Draw(player.sprite.Sprite, new Vector2(player.sprite.WorldPos.X, player.sprite.WorldPos.Y), Color.White);
-                spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y), Color.White);
+                //spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y), Color.White);
             spriteBatch.End();
 
 
