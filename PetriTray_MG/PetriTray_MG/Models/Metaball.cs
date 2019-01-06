@@ -11,9 +11,8 @@ namespace PetriTray_MG.Models
     class Metaball
     {
         public Vector3 Position;
-        public Vector3 SpritePos;
         private Vector4 rGBA;
-        public Vector4 Parameters;
+        public float Heat;
 
         public Vector4 RGBA { get => rGBA;
             set
@@ -31,14 +30,14 @@ namespace PetriTray_MG.Models
         {
             Position = Vector3.Zero;
             rGBA = Vector4.UnitW;
-            Parameters = Vector4.UnitX;
+            Heat = 1.0f;
         }
 
-        public Metaball(Vector3 pos, Vector4 rgba, Vector4 param)
+        public Metaball(Vector3 pos, Vector4 rgba, float heat)
         {
             Position = pos;
             rGBA = rgba;
-            Parameters = param;
+            Heat = heat;
         }
     }
 }
