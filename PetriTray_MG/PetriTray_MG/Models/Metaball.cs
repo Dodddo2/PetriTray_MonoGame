@@ -13,6 +13,7 @@ namespace PetriTray_MG.Models
         public Vector3 Position;
         private Vector4 rGBA;
         public float Heat;
+        private double animationDegree;
 
         public Vector4 RGBA { get => rGBA;
             set
@@ -21,7 +22,7 @@ namespace PetriTray_MG.Models
                     (value.Y < 0 || value.Y > 1) &&
                     (value.Z < 0 || value.Z > 1) &&
                     (value.W < 0 || value.W > 1))
-                {return;}
+                { return; }
                 rGBA = value;
             }
         }
@@ -31,6 +32,7 @@ namespace PetriTray_MG.Models
             Position = Vector3.Zero;
             rGBA = Vector4.UnitW;
             Heat = 1.0f;
+            InitAnimation();
         }
 
         public Metaball(Vector3 pos, Vector4 rgba, float heat)
@@ -38,6 +40,23 @@ namespace PetriTray_MG.Models
             Position = pos;
             rGBA = rgba;
             Heat = heat;
+            InitAnimation();
+        }
+
+        public void InitAnimation()
+        {
+            animationDegree = Position.X * Position.Y * 360;
+        }
+
+        public Vector3 Animate(float amplitude)
+        {
+            animationDegree += 0.1;
+            if (animationDegree > 360) { animationDegree = 0; }
+            Vector3 animated = new Vector3();
+            animated = Position;
+            animated.X += (float)Math.Sin(animationDegree)*amplitude;
+            animated.Y += (float)Math.Sin((animationDegree*2)%360)*amplitude;
+            return animated;
         }
     }
 }

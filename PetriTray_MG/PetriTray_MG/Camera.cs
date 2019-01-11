@@ -17,8 +17,8 @@ namespace PetriTray_MG
         public Matrix Projection => Matrix.CreateOrthographic(Resolution.Width, Resolution.Height, 0.0f, 1.0f);
         //public Matrix Projection => Matrix.CreatePerspectiveFieldOfView(MathHelper.Pi/3, 1.0f, 0.5f, 100.0f);
 
-        public Rectangle Resolution = new Rectangle(0, 0, 800, 600);
-        public float CameraSensitivity = 0.02f;
+        public Rectangle Resolution = new Rectangle(0, 0, 1000, 1000);
+        public float CameraSensitivity = 1f;
 
         public static readonly Camera Main = new Camera();
 
@@ -32,6 +32,16 @@ namespace PetriTray_MG
         {
             Console.WriteLine(Position.ToString());
             Position += moveTo * CameraSensitivity;
+        }
+
+        public Vector2 GetTopLeft()
+        {
+            return new Vector2(Resolution.Height/2 - 128, Resolution.Width/2 - 128);
+        } 
+
+        public Vector2 GetXY()
+        {
+            return new Vector2(Position.X, -Position.Y);
         }
     }
 }

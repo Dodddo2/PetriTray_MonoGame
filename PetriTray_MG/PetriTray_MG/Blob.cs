@@ -15,7 +15,7 @@ namespace PetriTray_MG
         private Effect effect;
         public List<Models.Metaball> metaballs = new List<Models.Metaball>();
         private GraphicStructure graphicStructure;
-        private int maxBalls = 20; // maximális metalabdák száma
+        private int maxBalls = 10; // maximális metalabdák száma
 
         
 
@@ -36,19 +36,24 @@ namespace PetriTray_MG
             metaballs.Add(ball);
         }
 
-        public void Draw(SpriteBatch spriteBatch, GraphicsDevice device)
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice device, GameTime elapsedTime)
         {
             device.SetRenderTarget(sprite.Sprite);
             graphicStructure.RefreshStructure(metaballs);
 
+
             //Kártya adatainak feltöltése, ha nem használt a paraméter ki kell kommentezni!
+            
             effect.Parameters["colors"].SetValue(graphicStructure.Colors);
             effect.Parameters["positions"].SetValue(graphicStructure.Positions);
-            effect.Parameters["heats"].SetValue(graphicStructure.Heats);
+            effect.Parameters["ballCount"].SetValue(metaballs.Count);
 
             device.Clear(Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
             effect.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
+            effect.Parameters["Blob"].SetValue(sprite.Sprite);
+            effect.CurrentTechnique.Passes[1].Apply();
             spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
             spriteBatch.End();
         }
@@ -56,13 +61,13 @@ namespace PetriTray_MG
         private class GraphicStructure
         {
             public Vector4[] Colors;
-            public Vector3[] Positions;
+            public Vector4[] Positions;
             public float[] Heats;
         
             public GraphicStructure(int maxBalls)
             {
                 Colors = new Vector4[maxBalls];
-                Positions = new Vector3[maxBalls];
+                Positions = new Vector4[maxBalls];
                 Heats = new float[maxBalls];
             }
 
@@ -70,7 +75,7 @@ namespace PetriTray_MG
             {
                 int maxBalls = Colors.Length;
                 Colors = new Vector4[maxBalls];
-                Positions = new Vector3[maxBalls];
+                Positions = new Vector4[maxBalls];
                 Heats = new float[maxBalls];
             }
 
@@ -81,7 +86,7 @@ namespace PetriTray_MG
                 foreach (Models.Metaball balls in metaballs)
                 {
                     Colors[counter] = balls.RGBA;
-                    Positions[counter] = balls.Position;
+                    Positions[counter] = new Vector4(balls.Animate(0.001f),balls.Heat);
                     Heats[counter] = balls.Heat;
                     counter++;
                 }
