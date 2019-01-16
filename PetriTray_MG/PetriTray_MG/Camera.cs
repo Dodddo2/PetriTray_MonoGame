@@ -22,15 +22,11 @@ namespace PetriTray_MG
 
         public static readonly Camera Main = new Camera();
 
-        public Camera()
-        {
-            Console.WriteLine("Camera");
-        }
 
 
         public void Move(Vector3 moveTo)
         {
-            Console.WriteLine(Position.ToString());
+            //Console.WriteLine(Position.ToString());
             Position += moveTo * CameraSensitivity;
         }
 

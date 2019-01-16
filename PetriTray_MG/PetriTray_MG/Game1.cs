@@ -92,6 +92,9 @@ namespace PetriTray_MG
                 InputHandling.InputHandler.KeyboardInputs(Keyboard.GetState().GetPressedKeys());
             }
 
+            CollisionHandler.CheckCollision(player, thing);
+            player.Pivot = Camera.Main.Position;
+
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -118,8 +121,9 @@ namespace PetriTray_MG
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Purple);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-                spriteBatch.Draw(player.sprite.Sprite, new Vector2(500, 500), null, null, new Vector2(128, 128), rotation, new Vector2(rotation, rotation), Color.White);
-                spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y) + shift, Color.White);
+            //spriteBatch.Draw(player.sprite.Sprite, new Vector2(500, 500), null, null, new Vector2(128, 128), rotation, new Vector2(rotation, rotation), Color.White);
+            spriteBatch.Draw(player.sprite.Sprite, new Vector2(500, 500), null, null, new Vector2(128, 128), 0.0f, null, Color.White);
+            spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y) + shift, Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
