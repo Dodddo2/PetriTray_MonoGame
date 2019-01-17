@@ -18,7 +18,7 @@ namespace PetriTray_MG
         public EntitySprite(GraphicsDevice device, int width, int height) {
             Device = device;
             Sprite = new RenderTarget2D(device, width, height, false,
-                SurfaceFormat.Color, DepthFormat.Depth16, 0, RenderTargetUsage.PreserveContents);
+                SurfaceFormat.Color, DepthFormat.Depth16, 1, RenderTargetUsage.PreserveContents);
         }
     }
 }

@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace PetriTray_MG
 {
     class Blob
     {
+        private Random random = new Random();
         public EntitySprite sprite;
+        private RenderTarget2D preRender;
         public Vector3 Pivot;
         private Effect effect;
         public List<Models.Metaball> metaballs = new List<Models.Metaball>();
@@ -27,6 +27,7 @@ namespace PetriTray_MG
             Pivot = pos;
             this.effect = effect;
             sprite.WorldPos = pos;
+            preRender = new RenderTarget2D(sprite.Device, sprite.Sprite.Width, sprite.Sprite.Height);
 
             graphicStructure = new GraphicStructure(maxBalls);
         }
@@ -38,23 +39,33 @@ namespace PetriTray_MG
 
         public void Draw(SpriteBatch spriteBatch, GraphicsDevice device, GameTime elapsedTime)
         {
-            device.SetRenderTarget(sprite.Sprite);
+            
+            device.SetRenderTarget(preRender);
             graphicStructure.RefreshStructure(metaballs);
 
 
             //Kártya adatainak feltöltése, ha nem használt a paraméter ki kell kommentezni!
-            
+
             effect.Parameters["colors"].SetValue(graphicStructure.Colors);
             effect.Parameters["positions"].SetValue(graphicStructure.Positions);
             effect.Parameters["ballCount"].SetValue(metaballs.Count);
 
             device.Clear(Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+
+            //pass0
+            sprite.Device.SetRenderTarget(preRender);
+            device.Clear(Color.Transparent);
             effect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
-            effect.Parameters["Blob"].SetValue(sprite.Sprite);
+
+            //pass1
+            sprite.Device.SetRenderTarget(sprite.Sprite);
+            effect.Parameters["Blob"].SetValue(preRender);
+            effect.Parameters["blurAmount"].SetValue(0.2f);
             effect.CurrentTechnique.Passes[1].Apply();
-            spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
+            spriteBatch.Draw(preRender, new Vector2(0, 0), Color.Transparent);
+
             spriteBatch.End();
         }
 

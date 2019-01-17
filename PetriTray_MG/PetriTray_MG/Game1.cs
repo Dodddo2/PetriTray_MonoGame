@@ -126,6 +126,8 @@ namespace PetriTray_MG
             spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y) + shift, Color.White);
             spriteBatch.End();
 
+            //player.sprite.Sprite.SaveAsPng(File.Create("out.png"), 256, 256);
+
             base.Draw(gameTime);
         }
     }

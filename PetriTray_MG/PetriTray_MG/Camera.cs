@@ -26,7 +26,7 @@ namespace PetriTray_MG
 
         public void Move(Vector3 moveTo)
         {
-            //Console.WriteLine(Position.ToString());
+            Console.WriteLine(Position.ToString());
             Position += moveTo * CameraSensitivity;
         }
 
