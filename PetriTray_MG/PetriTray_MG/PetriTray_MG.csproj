@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Background.cs" />
     <Compile Include="BasicGeometry.cs" />
     <Compile Include="Blob.cs" />
     <Compile Include="Camera.cs" />
@@ -61,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Background.fx" />
     <Content Include="Content\Metaball.fx" />
     <Content Include="Icon.ico" />
   </ItemGroup>

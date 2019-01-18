@@ -8,9 +8,12 @@ namespace PetriTray_MG
 {
     class Blob
     {
-        private Random random = new Random();
+        public float HeatSum;
+        private int blurIterations;
         public EntitySprite sprite;
         private RenderTarget2D preRender;
+        private RenderTarget2D blurA;
+        private RenderTarget2D blurB;
         public Vector3 Pivot;
         private Effect effect;
         public List<Models.Metaball> metaballs = new List<Models.Metaball>();
@@ -28,6 +31,9 @@ namespace PetriTray_MG
             this.effect = effect;
             sprite.WorldPos = pos;
             preRender = new RenderTarget2D(sprite.Device, sprite.Sprite.Width, sprite.Sprite.Height);
+            blurA = new RenderTarget2D(sprite.Device, sprite.Sprite.Width, sprite.Sprite.Height);
+            blurB = new RenderTarget2D(sprite.Device, sprite.Sprite.Width, sprite.Sprite.Height);
+            HeatSum = 0.0f;
 
             graphicStructure = new GraphicStructure(maxBalls);
         }
@@ -35,9 +41,10 @@ namespace PetriTray_MG
         public void AddBall(Models.Metaball ball)
         {
             metaballs.Add(ball);
+            HeatSum += ball.Heat;
         }
 
-        public void Draw(SpriteBatch spriteBatch, GraphicsDevice device, GameTime elapsedTime)
+        public void Draw(SpriteBatch spriteBatch, GraphicsDevice device, GameTime elapsedTime, float blurAmount)
         {
             
             device.SetRenderTarget(preRender);
@@ -49,6 +56,7 @@ namespace PetriTray_MG
             effect.Parameters["colors"].SetValue(graphicStructure.Colors);
             effect.Parameters["positions"].SetValue(graphicStructure.Positions);
             effect.Parameters["ballCount"].SetValue(metaballs.Count);
+            effect.Parameters["blurAmount"].SetValue(blurAmount);
 
             device.Clear(Color.Transparent);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
@@ -59,14 +67,34 @@ namespace PetriTray_MG
             effect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(sprite.Sprite, new Vector2(0, 0), Color.Transparent);
 
-            //pass1
-            sprite.Device.SetRenderTarget(sprite.Sprite);
-            effect.Parameters["Blob"].SetValue(preRender);
-            effect.Parameters["blurAmount"].SetValue(0.2f);
+            //effect.Parameters["Blob"].SetValue(preRender);
+            sprite.Device.SetRenderTarget(blurB);
+            device.Clear(Color.Transparent);
             effect.CurrentTechnique.Passes[1].Apply();
             spriteBatch.Draw(preRender, new Vector2(0, 0), Color.Transparent);
 
+            //passBlur 
+            for (blurIterations = 0; blurIterations < 10; blurIterations++)
+            {
+                sprite.Device.SetRenderTarget(blurA);
+                //effect.Parameters["Blob"].SetValue(blurB);
+                device.Clear(Color.Transparent);
+                effect.CurrentTechnique.Passes[1].Apply();
+                spriteBatch.Draw(blurB, new Vector2(0, 0), Color.Transparent);
+                sprite.Device.SetRenderTarget(blurB);
+                device.Clear(Color.Transparent);
+                //effect.Parameters["Blob"].SetValue(blurA);
+                effect.CurrentTechnique.Passes[1].Apply();
+                spriteBatch.Draw(blurA, new Vector2(0, 0), Color.Transparent);
+            }
+            sprite.Device.SetRenderTarget(sprite.Sprite);
+            //device.Clear(Color.Transparent);
+            spriteBatch.Draw(blurB, new Vector2(0, 0), Color.Transparent);
             spriteBatch.End();
+
+            /*
+             * A SpriteBatch texture2d-je feltölti a Metaball.fx Blob textúráját
+             */
         }
 
         private class GraphicStructure

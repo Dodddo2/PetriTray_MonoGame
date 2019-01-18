@@ -16,7 +16,8 @@ namespace PetriTray_MG
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         BasicEffect effect;
-        Blob player, thing;
+        Blob player, thing, merge;
+        Background background;
 
 
         public Game1()
@@ -52,6 +53,9 @@ namespace PetriTray_MG
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            background = new Background(GraphicsDevice, Content.Load<Effect>("Background"), Content.Load<Texture2D>("Water"));
+
             player = new Blob(Vector3.Zero, GraphicsDevice, Content.Load<Effect>("Metaball"));
             player.AddBall(new Models.Metaball(new Vector3(0.3f, -0.5f, 0), new Vector4(0,1,0,1), 0.1f));
             player.AddBall(new Models.Metaball(new Vector3(0.5f, -0.5f, 0), new Vector4(1, 0, 0, 1), 0.1f));
@@ -60,6 +64,10 @@ namespace PetriTray_MG
 
             thing = new Blob(new Vector3(400, 0, 0), GraphicsDevice, Content.Load<Effect>("Metaball"));
             thing.AddBall(new Models.Metaball(new Vector3(0.5f, -0.5f, 0), new Vector4(0, 1, 0, 1), 0.2f));
+
+            merge = new Blob(new Vector3(200, 200, 0), GraphicsDevice, Content.Load<Effect>("Metaball"));
+            merge.AddBall(new Models.Metaball(new Vector3(0.3f, -0.5f, 0), new Vector4(0, 1, 0, 1), 0.1f));
+            merge.AddBall(new Models.Metaball(new Vector3(0.7f, -0.5f, 0), new Vector4(1, 0, 0, 1), 0.1f));
 
             //Console.WriteLine(GraphicsDevice.Viewport.Project(new Vector3(-200, 0, 0), Camera.Main.Projection, Camera.Main.View, Matrix.Identity));
 
@@ -94,6 +102,7 @@ namespace PetriTray_MG
 
             CollisionHandler.CheckCollision(player, thing);
             player.Pivot = Camera.Main.Position;
+            merge.metaballs[0].Position.X = 0.2f * (float)Math.Sin(gameTime.TotalGameTime.TotalMilliseconds / 1000) + 0.5f;
 
             // TODO: Add your update logic here
 
@@ -111,19 +120,44 @@ namespace PetriTray_MG
             //Console.WriteLine(watch.ElapsedMilliseconds);
             watch.Restart();
             // TODO: Add your drawing code here
-            player.Draw(spriteBatch, GraphicsDevice, gameTime);
-            thing.Draw(spriteBatch, GraphicsDevice, gameTime);
+            background.Draw(spriteBatch, GraphicsDevice, gameTime);
+
+            //mélység számolása
+            float scale;
+            float depth = thing.Pivot.Z - player.Pivot.Z;
+            if (depth < 0)
+            {
+                depth = -depth + 100;
+                scale = 100 / depth;
+            }
+            else
+            {
+                depth += 100;
+                scale = depth / 100;
+            }
+
+            player.Draw(spriteBatch, GraphicsDevice, gameTime, 0.1f);
+            thing.Draw(spriteBatch, GraphicsDevice, gameTime, depth / 100);
+            merge.Draw(spriteBatch, GraphicsDevice, gameTime, depth / 100);
+            
             Vector2 shift = Camera.Main.GetTopLeft() - Camera.Main.GetXY();
             
             rotation += 0.01f;
             if (rotation > 6.28f) { rotation = 0; }
             
             GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.Purple);
+            GraphicsDevice.Clear(new Color(0.8f, 0.8f, 0.6f, 1.0f));
+
+            //Háttér kirajzolása
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-            //spriteBatch.Draw(player.sprite.Sprite, new Vector2(500, 500), null, null, new Vector2(128, 128), rotation, new Vector2(rotation, rotation), Color.White);
+            spriteBatch.Draw(background.Sprite, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+            //Blob-ok kirajzolása
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
             spriteBatch.Draw(player.sprite.Sprite, new Vector2(500, 500), null, null, new Vector2(128, 128), 0.0f, null, Color.White);
-            spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.sprite.WorldPos.X, thing.sprite.WorldPos.Y) + shift, Color.White);
+            spriteBatch.Draw(thing.sprite.Sprite, new Vector2(thing.Pivot.X, thing.Pivot.Y) + shift + new Vector2(128, 128), null, null, new Vector2(128, 128), 0.0f, new Vector2(scale, scale), new Color(1.0f, 1.0f, 1.0f, 100 / depth));
+            spriteBatch.Draw(merge.sprite.Sprite, new Vector2(merge.Pivot.X, merge.Pivot.Y) + shift + new Vector2(128, 128), null, null, new Vector2(128, 128), 0.0f, new Vector2(scale, scale), new Color(1.0f, 1.0f, 1.0f, 100 / depth));
             spriteBatch.End();
 
             //player.sprite.Sprite.SaveAsPng(File.Create("out.png"), 256, 256);
